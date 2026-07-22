@@ -20,6 +20,11 @@ public class McpToolAdapter {
 
     public static void main(String[] args) {
         // 1. Den echten System.out-Kanal für die Claude-JSON-Kommunikation sichern
+        System.err.println("[GMAF-MCP] Aktuelles Arbeitsverzeichnis: " + new java.io.File(".").getAbsolutePath()); //nur für logging
+        java.io.File configFile = new java.io.File("conf/gmaf.config");
+        System.err.println("[GMAF-MCP] Suche Config unter: " + configFile.getAbsolutePath());
+        System.err.println("[GMAF-MCP] Datei existiert: " + configFile.exists());
+
         PrintStream claudeJsonOut = System.out;
 
         // 2. Den globalen System.out auf System.err umbiegen.
@@ -110,12 +115,14 @@ public class McpToolAdapter {
 
                 String queryParam = extractJsonValue(jsonRequest, "query");
                 String confParam = extractJsonValue(jsonRequest, "min_confidence");
+                String tokenParam = extractJsonValue(jsonRequest, "authtoken");
                 float minConf = confParam.isEmpty() ? 0.0f : Float.parseFloat(confParam);
 
                 try {
                     GmafQueryConfig config = new GmafQueryBuilder()
                             .setQuery(queryParam)
                             .setMinConfidence(minConf)
+                            .setSessionToken(tokenParam)
                             .buildQuery();
 
                     // Simulation des MMIR-Indexabgleichs (Kapitel 3.4)
